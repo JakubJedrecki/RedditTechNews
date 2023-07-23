@@ -16,16 +16,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.jakub.domain.models.Post
+import androidx.navigation.NavController
+import com.jakub.reddittechnews.navigation.NewsScreens
 import com.jakub.reddittechnews.ui.theme.Purple40
+import com.jakub.ui.components.ErrorView
 import com.jakub.ui.components.PostComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -42,6 +44,7 @@ fun HomeScreen(
                 .padding(8.dp)
         ) {
             HomeContent(
+                navController,
                 uiState,
                 isRefreshing = viewModel.isRefreshing
             ) { viewModel.getLatestNews() }
@@ -52,12 +55,11 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(
+    navController: NavController,
     uiState: HomeUiState,
     isRefreshing: Boolean,
     getNews: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
@@ -69,16 +71,7 @@ fun HomeContent(
             .pullRefresh(pullRefreshState)
     ) {
         if (uiState.hasError) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(text = uiState.errorMsg)
-            }
+            ErrorView(errorMessage = uiState.errorMsg)
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(uiState.posts) { index, item ->
@@ -89,7 +82,9 @@ fun HomeContent(
                         timestamp = item.timestamp,
                         label = item.linkFlairText,
                         imageUrl = item.imageUrl
-                    )
+                    ) {
+                        navController.navigate(route = NewsScreens.DetailsScreen.name+"/${item.title}")
+                    }
                 }
             }
 

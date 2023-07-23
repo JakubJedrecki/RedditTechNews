@@ -26,6 +26,7 @@ fun PostComponent(
     timestamp: String = "",
     label: String = "",
     imageUrl: String = "",
+    onItemClick: (String) -> Unit = {}
 ) {
     Surface(
         modifier = Modifier
@@ -33,7 +34,7 @@ fun PostComponent(
             .wrapContentHeight()
     ) {
         Card(modifier = Modifier.padding(8.dp),
-            onClick = { /* TODO */ }) {
+            onClick = { onItemClick(title) }) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.jakub.reddittechnews.features.home.HomeScreen
+import com.jakub.reddittechnews.navigation.NavGraph
 import com.jakub.reddittechnews.ui.theme.RedditTechNewsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreen()
+                    NavGraph()
                 }
             }
         }
