@@ -2,21 +2,19 @@ package com.jakub.reddittechnews.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jakub.domain.models.Post
+import com.jakub.data.repositories.TechNewsRepositoryImpl
+import com.jakub.domain.shared.ResultResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(): ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val repository: TechNewsRepositoryImpl
+) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing get() = _isRefreshing.value
@@ -25,34 +23,16 @@ class HomeViewModel @Inject constructor(): ViewModel() {
 
     fun refresh() {
         viewModelScope.launch {
-            _uiState.update { state ->
-                state.copy(posts = emptyList())
-            }
-//            _isRefreshing.value = true //pullRefresh has a bug and indicator doesn't go away
-            withContext(Dispatchers.IO) {
-                delay(2000)
-                _uiState.update { state ->
-                    state.copy(
-                        posts = listOf(
-                            Post(
-                                "author 1",
-                                Random.nextInt().toString(),
-                                "title ${Random.nextInt()}",
-                                "some image url",
-                                "FlairText1"
-                            ),
-                            Post(
-                                "author 6",
-                                Random.nextInt().toString(),
-                                "title ${Random.nextInt()}",
-                                "some image url",
-                                "FlairText6"
-                            ),
-                        )
-                    )
+            _uiState.value = HomeUiState() // clear ui list
+
+            when (val result = repository.getTechNews()) {
+                is ResultResponse.Success -> {
+                    _uiState.value = HomeUiState(posts = result.data)
+                }
+                is ResultResponse.Error -> {
+                    _uiState.value = HomeUiState(errorMsg = result.error.message, hasError = true)
                 }
             }
-
             _isRefreshing.value = false
         }
     }
