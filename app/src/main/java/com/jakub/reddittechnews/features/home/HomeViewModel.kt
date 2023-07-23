@@ -2,7 +2,7 @@ package com.jakub.reddittechnews.features.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jakub.data.repositories.TechNewsRepositoryImpl
+import com.jakub.domain.repositories.TechNewsRepository
 import com.jakub.domain.shared.ResultResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: TechNewsRepositoryImpl
+    private val repository: TechNewsRepository
 ) : ViewModel() {
 
     private val _isRefreshing = MutableStateFlow(false)
@@ -21,9 +21,10 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> get() = _uiState.asStateFlow()
 
-    fun refresh() {
+    fun getLatestNews() {
         viewModelScope.launch {
             _uiState.value = HomeUiState() // clear ui list
+            _isRefreshing.value = true
 
             when (val result = repository.getTechNews()) {
                 is ResultResponse.Success -> {
@@ -38,6 +39,6 @@ class HomeViewModel @Inject constructor(
     }
 
     init {
-        refresh()
+        getLatestNews()
     }
 }

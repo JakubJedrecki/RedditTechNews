@@ -1,7 +1,7 @@
 package com.jakub.data.repositories
 
 import com.jakub.data.mappers.mapToDomain
-import com.jakub.data.repositories.interfaces.TechNewsRepository
+import com.jakub.domain.repositories.TechNewsRepository
 import com.jakub.data.services.HomeService
 import com.jakub.domain.models.Post
 import com.jakub.domain.shared.ErrorEntity

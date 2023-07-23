@@ -13,18 +13,23 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.jakub.domain.models.Post
 import com.jakub.reddittechnews.ui.theme.Purple40
 import com.jakub.ui.components.PostComponent
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(topBar = {
         TopAppBar(
             title = { Text(text = "Technology") },
@@ -36,7 +41,10 @@ fun HomeScreen() {
                 .padding(paddingValues)
                 .padding(8.dp)
         ) {
-            HomeContent()
+            HomeContent(
+                uiState,
+                isRefreshing = viewModel.isRefreshing
+            ) { viewModel.getLatestNews() }
         }
     }
 }
@@ -44,28 +52,36 @@ fun HomeScreen() {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeContent(
-    viewModel: HomeViewModel = hiltViewModel()
+    uiState: HomeUiState,
+    isRefreshing: Boolean,
+    getNews: () -> Unit
 ) {
-    val uiState = viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = viewModel.isRefreshing,
+        refreshing = isRefreshing,
         onRefresh = {
-            viewModel.refresh()
+            getNews()
         })
 
     Box(
         modifier = Modifier
             .pullRefresh(pullRefreshState)
     ) {
-        if (uiState.value.hasError) {
-            Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(scrollState), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
-                Text(text = uiState.value.errorMsg)
+        if (uiState.hasError) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(scrollState),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(text = uiState.errorMsg)
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                itemsIndexed(uiState.value.posts) { index, item ->
+                itemsIndexed(uiState.posts) { index, item ->
                     PostComponent(
                         position = index + 1,
                         author = item.author,
@@ -78,7 +94,7 @@ fun HomeContent(
             }
 
             PullRefreshIndicator(
-                refreshing = viewModel.isRefreshing, state = pullRefreshState, Modifier.align(
+                refreshing = isRefreshing, state = pullRefreshState, Modifier.align(
                     Alignment.TopCenter
                 )
             )

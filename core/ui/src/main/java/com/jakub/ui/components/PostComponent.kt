@@ -1,6 +1,5 @@
 package com.jakub.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,17 +8,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jakub.ui.R
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun PostComponent(
-    position: Int,
+    position: Int = 1,
     author: String = "",
     title: String = "",
     timestamp: String = "",
@@ -38,7 +39,8 @@ fun PostComponent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .wrapContentHeight(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
@@ -48,37 +50,44 @@ fun PostComponent(
                             modifier = Modifier.size(40.dp),
                             imageVector = Icons.Default.AccountCircle,
                             contentDescription = "icon"
-                        ) //TODO replace with coil
+                        )
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
-                            Text(text = title, fontWeight = FontWeight.Bold)
                             Row {
                                 Text(text = author)
                                 Text(text = "  •  ")
                                 Text(text = timestamp)
                             }
+                            Text(text = title, fontWeight = FontWeight.Bold)
                         }
                     }
-
-                    Box(
-                        modifier = Modifier
-                            .background(color = Color.DarkGray)
-                            .wrapContentSize()
-                            .padding(2.dp)
-                    ) {
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.LightGray
-                        )
-                    }
                 }
+
+                Row(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = 6.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        modifier = Modifier.background(color = MaterialTheme.colorScheme.inversePrimary).padding(horizontal = 4.dp),
+                        text = label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.inverseSurface
+                    )
+                }
+
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Image(
-                        modifier = Modifier.fillMaxWidth(),
-                        painter = painterResource(id = R.drawable.aaaa),
-                        contentDescription = ""
-                    ) //TODO replace with coil
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(imageUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "post image",
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxSize()
+                    )
                 }
             }
         }

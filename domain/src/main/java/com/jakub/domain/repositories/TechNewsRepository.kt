@@ -1,4 +1,4 @@
-package com.jakub.data.repositories.interfaces
+package com.jakub.domain.repositories
 
 import com.jakub.domain.models.Post
 import com.jakub.domain.shared.ResultResponse
