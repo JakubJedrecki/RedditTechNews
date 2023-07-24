@@ -18,5 +18,8 @@ fun Data.mapToDomain(): Post = Post(
     timestamp = created.toString(),
     title = title ?: "",
     imageUrl = thumbnail ?: "",
-    linkFlairText = linkFlairText ?: ""
+    linkFlairText = linkFlairText ?: "",
+    upVotes = ups ?: 0,
+    downVotes = downs ?: 0,
+    numComments = numComments ?: 0
 )

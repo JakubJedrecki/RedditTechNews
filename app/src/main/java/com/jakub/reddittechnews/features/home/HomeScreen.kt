@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.jakub.domain.models.Post
 import com.jakub.reddittechnews.navigation.NewsScreens
 import com.jakub.reddittechnews.ui.theme.Purple40
 import com.jakub.ui.components.ErrorView
@@ -83,7 +84,12 @@ fun HomeContent(
                         label = item.linkFlairText,
                         imageUrl = item.imageUrl
                     ) {
-                        navController.navigate(route = NewsScreens.DetailsScreen.name+"/${item.title}")
+                        //not the best approach to pass data but given the time running out
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            key = "post",
+                            value = item
+                        )
+                        navController.navigate(route = NewsScreens.DetailsScreen.name)
                     }
                 }
             }

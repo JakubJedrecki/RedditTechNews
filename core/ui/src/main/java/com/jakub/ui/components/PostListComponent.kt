@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -15,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.jakub.ui.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -82,6 +82,7 @@ fun PostComponent(
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(imageUrl)
+                            .placeholder(R.drawable.aaaa)
                             .crossfade(true)
                             .build(),
                         contentDescription = "post image",

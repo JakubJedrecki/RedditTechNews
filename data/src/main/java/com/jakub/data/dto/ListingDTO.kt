@@ -24,7 +24,9 @@ data class Data(
     @SerializedName("created") var created: Int? = null,
     @SerializedName("id") var id: String? = null,
     @SerializedName("author") var author: String? = null,
-    @SerializedName("created_utc") var createdUtc: Int? = null,
+    @SerializedName("num_comments") var numComments: Int? = null,
+    @SerializedName("ups") var ups: Int? = null,
+    @SerializedName("downs") var downs: Int? = null,
 )
 
 data class Images(
